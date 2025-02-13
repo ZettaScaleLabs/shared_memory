@@ -176,7 +176,7 @@ fn open_map(unique_id: &str, allow_raw: bool) -> Result<MapData, ShmemError> {
                 unique_id,
             );
             match OpenFileMapping(FILE_MAP_ALL_ACCESS, false, unique_id) {
-                Ok(h) => h,
+                Ok(h) => (None, h),
                 Err(e) => {
                     return Err(ShmemError::MapOpenFailed(e.win32_error().unwrap().0));
                 }
@@ -298,7 +298,7 @@ fn new_map(unique_id: &str, map_size: usize) -> Result<MapData, ShmemError> {
 
 //Creates a mapping specified by the uid and size
 pub fn create_mapping(unique_id: &str, map_size: usize) -> Result<MapData, ShmemError> {
-    new_map(unique_id, map_size, true)
+    new_map(unique_id, map_size)
 }
 
 //Opens an existing mapping specified by its uid
@@ -307,5 +307,5 @@ pub fn open_mapping(
     map_size: usize,
     ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    open_map(unique_id, false, ext.allow_raw)
+    open_map(unique_id, ext.allow_raw)
 }
