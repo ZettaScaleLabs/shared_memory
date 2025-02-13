@@ -164,7 +164,7 @@ fn open_map(unique_id: &str, allow_raw: bool) -> Result<MapData, ShmemError> {
         }
         Err(e) => {
             if !allow_raw {
-                return Err(ShmemError::MapOpenFailed(ERROR_FILE_NOT_FOUND.0));
+                return Err(ShmemError::MapOpenFailed(e.win32_error().unwrap().0));
             }
 
             // This may be a mapping that isnt managed by this crate
@@ -304,7 +304,7 @@ pub fn create_mapping(unique_id: &str, map_size: usize) -> Result<MapData, Shmem
 //Opens an existing mapping specified by its uid
 pub fn open_mapping(
     unique_id: &str,
-    map_size: usize,
+    _map_size: usize,
     ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
     open_map(unique_id, ext.allow_raw)
