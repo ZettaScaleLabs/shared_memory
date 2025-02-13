@@ -131,14 +131,13 @@ fn get_tmp_dir() -> Result<PathBuf, ShmemError> {
     }
 }
 
-fn open_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<MapData, ShmemError> {
+fn open_map(unique_id: &str, allow_raw: bool) -> Result<MapData, ShmemError> {
     // Create file to back the shared memory
     let mut file_path = get_tmp_dir()?;
     file_path.push(unique_id.trim_start_matches('/'));
     debug!("Opening persistent_file at {}", file_path.to_string_lossy());
 
-    let mut persistent_file = None;
-    let map_h = match OpenOptions::new()
+    let (persistent_file, map_h) = match OpenOptions::new()
         .read(true)
         .write(true)
         .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
@@ -157,7 +156,7 @@ fn open_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<Map
                 unique_id,
             );
             match OpenFileMapping(FILE_MAP_ALL_ACCESS, false, unique_id) {
-                Ok(h) => h,
+                Ok(h) => (Some(f), h),
                 Err(e) => {
                     return Err(ShmemError::MapOpenFailed(e.win32_error().unwrap().0));
                 }
@@ -199,24 +198,23 @@ fn open_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<Map
     };
     trace!("\t{:p}", map_ptr);
 
-    //Get the real size of the openned mapping
+    //Get the real size of the opened mapping
     let mut info = MEMORY_BASIC_INFORMATION::default();
     if let Err(e) = VirtualQuery(map_ptr.as_mut_ptr(), &mut info) {
         return Err(ShmemError::UnknownOsError(e.win32_error().unwrap().0));
     }
-    map_size = info.RegionSize;
 
     Ok(MapData {
         owner: false,
         file_map: map_h,
         persistent_file,
         unique_id: unique_id.to_string(),
-        map_size,
+        map_size: info.RegionSize,
         view: map_ptr,
     })
 }
 
-fn new_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<MapData, ShmemError> {
+fn new_map(unique_id: &str, map_size: usize) -> Result<MapData, ShmemError> {
     // Create file to back the shared memory
     let mut file_path = get_tmp_dir()?;
     file_path.push(unique_id.trim_start_matches('/'));
@@ -225,8 +223,7 @@ fn new_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<MapD
         file_path.to_string_lossy()
     );
 
-    let mut persistent_file = None;
-    let map_h = match OpenOptions::new()
+    let (persistent_file, map_h) = match OpenOptions::new()
         .read(true)
         .write(true)
         .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
@@ -256,10 +253,7 @@ fn new_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<MapD
                 low_size,
                 unique_id,
             ) {
-                Ok(v) => {
-                    persistent_file = Some(f);
-                    v
-                }
+                Ok(v) => (Some(f), v),
                 Err(e) => {
                     let err_code = e.win32_error().unwrap();
                     return Err(if err_code == ERROR_ALREADY_EXISTS {
@@ -304,7 +298,7 @@ fn new_map(unique_id: &str, mut map_size: usize, allow_raw: bool) -> Result<MapD
 
 //Creates a mapping specified by the uid and size
 pub fn create_mapping(unique_id: &str, map_size: usize) -> Result<MapData, ShmemError> {
-    new_map(unique_id, map_size, true, false)
+    new_map(unique_id, map_size, true)
 }
 
 //Opens an existing mapping specified by its uid
@@ -313,5 +307,5 @@ pub fn open_mapping(
     map_size: usize,
     ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    open_map(unique_id, map_size, false, ext.allow_raw)
+    open_map(unique_id, false, ext.allow_raw)
 }
