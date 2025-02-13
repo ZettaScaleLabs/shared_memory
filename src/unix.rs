@@ -81,7 +81,11 @@ impl MapData {
 }
 
 /// Creates a mapping specified by the uid and size
-pub fn create_mapping(unique_id: &str, map_size: usize) -> Result<MapData, ShmemError> {
+pub fn create_mapping(
+    unique_id: &str,
+    map_size: usize,
+    _: &ShmemConfExt,
+) -> Result<MapData, ShmemError> {
     //Create shared memory file descriptor
     debug!("Creating persistent mapping at {}", unique_id);
 

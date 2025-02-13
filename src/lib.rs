@@ -118,7 +118,7 @@ impl ShmemConf {
                 // Generate random ID until one works
                 loop {
                     let cur_id = format!("/shmem_{:X}", rand::random::<u64>());
-                    match os_impl::create_mapping(&cur_id, self.size) {
+                    match os_impl::create_mapping(&cur_id, self.size, &self.ext) {
                         Err(ShmemError::MappingIdExists) => continue,
                         Ok(m) => break m,
                         Err(e) => {
@@ -127,7 +127,7 @@ impl ShmemConf {
                     };
                 }
             }
-            Some(ref specific_id) => os_impl::create_mapping(specific_id, self.size)?,
+            Some(ref specific_id) => os_impl::create_mapping(specific_id, self.size, &self.ext)?,
         };
         debug!("Created shared memory mapping '{}'", mapping.unique_id);
 
