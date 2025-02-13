@@ -1,6 +1,6 @@
 use std::fs::{File, OpenOptions};
 use std::io::ErrorKind;
-use std::os::windows::{fs::OpenOptionsExt, io::AsRawHandle};
+use std::os::windows::fs::OpenOptionsExt;
 use std::path::PathBuf;
 
 use crate::{log::*, ShmemConf};
@@ -73,7 +73,7 @@ impl Drop for MapData {
             {
                 Ok(_) => {
                     // 2. Rename file to prevent further use
-                    base_path.push(&format!(
+                    base_path.push(format!(
                         "{}_deleted",
                         self.unique_id.trim_start_matches('/')
                     ));
