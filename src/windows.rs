@@ -169,7 +169,7 @@ fn new_map(
             let low_size: u32 = (map_size as u64 & 0xFFFF_FFFF_u64) as u32;
             trace!(
                 "CreateFileMapping({:?}, NULL, {:X}, {}, {}, '{}')",
-                HANDLE(f.as_raw_handle() as _),
+                INVALID_HANDLE_VALUE,
                 PAGE_READWRITE.0,
                 high_size,
                 low_size,
@@ -177,7 +177,7 @@ fn new_map(
             );
 
             match CreateFileMapping(
-                HANDLE(f.as_raw_handle() as _),
+                INVALID_HANDLE_VALUE,
                 None,
                 PAGE_READWRITE,
                 high_size,
