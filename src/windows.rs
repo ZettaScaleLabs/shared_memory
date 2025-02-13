@@ -164,7 +164,7 @@ fn open_map(unique_id: &str, allow_raw: bool) -> Result<MapData, ShmemError> {
         }
         Err(e) => {
             if !allow_raw {
-                return Err(ShmemError::MapOpenFailed(e.win32_error().unwrap().0));
+                return Err(ShmemError::MapOpenFailed(e.raw_os_error().unwrap() as _));
             }
 
             // This may be a mapping that isnt managed by this crate
