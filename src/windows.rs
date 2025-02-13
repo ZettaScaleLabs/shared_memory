@@ -158,6 +158,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
                 if !ext.allow_raw {
                     return Err(ShmemError::MapOpenFailed(e.raw_os_error().unwrap() as _));
                 }
+                None
             }
         },
         true => None,
