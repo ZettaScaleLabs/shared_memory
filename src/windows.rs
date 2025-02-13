@@ -220,6 +220,7 @@ fn create_file_mapping(
     let map_h = {
         debug!("Creating memory mapping",);
         let h_handle = persistent_file
+            .as_ref()
             .map(|f| HANDLE(f.as_raw_handle() as _))
             .unwrap_or(INVALID_HANDLE_VALUE);
         let high_size: u32 = ((map_size as u64 & 0xFFFF_FFFF_0000_0000_u64) >> 32) as u32;
