@@ -1,6 +1,6 @@
 use std::fs::{File, OpenOptions};
 use std::io::ErrorKind;
-use std::os::windows::fs::OpenOptionsExt;
+use std::os::windows::fs::{OpenOptionsExt, AsRawHandle};
 use std::path::PathBuf;
 
 use crate::{log::*, ShmemConf};
@@ -155,7 +155,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
         {
             Ok(f) => Some(f),
             Err(e) => {
-                if !allow_raw {
+                if !ext.allow_raw {
                     return Err(ShmemError::MapOpenFailed(e.raw_os_error().unwrap() as _));
                 }
             }
@@ -174,7 +174,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
             unique_id,
         );
         match OpenFileMapping(FILE_MAP_ALL_ACCESS, false, unique_id) {
-            Ok(h) => (Some(f), h),
+            Ok(h) => h,
             Err(e) => {
                 return Err(ShmemError::MapOpenFailed(e.win32_error().unwrap().0));
             }
