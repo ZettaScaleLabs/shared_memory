@@ -308,12 +308,13 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
 pub fn create_mapping(
     unique_id: &str,
     map_size: usize,
-    ext: &ShmemConfExt,
+    _ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    match ext.suppress_persistency {
-        true => create_file_mapping(unique_id, map_size, None),
-        false => create_persistent_file_mapping(unique_id, map_size),
-    }
+    create_persistent_file_mapping(unique_id, map_size)
+    //match ext.suppress_persistency {
+    //    true => create_file_mapping(unique_id, map_size, None),
+    //    false => create_persistent_file_mapping(unique_id, map_size),
+    //}
 }
 
 //Opens an existing mapping specified by its uid
