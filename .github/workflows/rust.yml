@@ -43,7 +43,6 @@ jobs:
         uses: actions-rs/cargo@v1.0.3
         with:
           command: build
-          args: --features logging
 
       - name: Set RUST_LOG
         run: echo "RUST_LOG=trace" >> $GITHUB_ENV
@@ -52,7 +51,7 @@ jobs:
         uses: actions-rs/cargo@v1.0.3
         with:
           command: test
-          args: -- --nocapture
+          args: --features logging -- --nocapture
 
       - name: Examples
         uses: actions-rs/cargo@v1.0.3
