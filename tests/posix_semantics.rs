@@ -5,7 +5,16 @@ use std::thread;
 #[test]
 fn persistence() {
     let os_id = {
-        let mut shmem = ShmemConf::new().size(4096).create().unwrap();
+        let mut shmem = ShmemConf::new()
+            .size(4096)
+            .ext(ShmemConfExt {
+                #[cfg(target_os = "windows")]
+                allow_raw: true,
+                #[cfg(target_os = "windows")]
+                suppress_persistency: false,
+            })
+            .create()
+            .unwrap();
         shmem.set_owner(false);
         String::from(shmem.get_os_id())
     };
