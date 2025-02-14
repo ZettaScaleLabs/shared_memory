@@ -65,6 +65,7 @@ impl Drop for MapData {
         // deleted once all handles have been closed and no new handles can be opened
         // because the file has been renamed. This matches the behavior of shm_unlink()
         // on unix.
+        /*
         if self.owner {
             let mut base_path = get_tmp_dir().unwrap();
 
@@ -106,6 +107,7 @@ impl Drop for MapData {
                 }
             };
         }
+        */
     }
 }
 
@@ -308,13 +310,12 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
 pub fn create_mapping(
     unique_id: &str,
     map_size: usize,
-    _ext: &ShmemConfExt,
+    ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    create_persistent_file_mapping(unique_id, map_size)
-    //match ext.suppress_persistency {
-    //    true => create_file_mapping(unique_id, map_size, None),
-    //    false => create_persistent_file_mapping(unique_id, map_size),
-    //}
+    match ext.suppress_persistency {
+        true => create_file_mapping(unique_id, map_size, None),
+        false => create_persistent_file_mapping(unique_id, map_size),
+    }
 }
 
 //Opens an existing mapping specified by its uid
