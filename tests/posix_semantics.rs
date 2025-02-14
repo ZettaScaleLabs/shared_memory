@@ -7,7 +7,6 @@ fn persistence() {
     let os_id = {
         let mut shmem = ShmemConf::new().size(4096).create().unwrap();
         shmem.set_owner(false);
-        unsafe { shmem.as_slice_mut().fill(0) };
         String::from(shmem.get_os_id())
     };
     let mut shmem = ShmemConf::new().os_id(os_id).open().unwrap();
