@@ -171,9 +171,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
 
         info!(
             "OpenFileMappingW({:?}, {}, '{}')",
-            FILE_MAP_ALL_ACCESS,
-            false,
-            unique_id,
+            FILE_MAP_ALL_ACCESS, false, unique_id,
         );
         match OpenFileMapping(FILE_MAP_ALL_ACCESS, false, unique_id) {
             Ok(h) => h,
@@ -228,11 +226,7 @@ fn create_file_mapping(
         let low_size: u32 = (map_size as u64 & 0xFFFF_FFFF_u64) as u32;
         info!(
             "CreateFileMapping({:?}, NULL, {:X}, {}, {}, '{}')",
-            h_handle,
-            PAGE_READWRITE.0,
-            high_size,
-            low_size,
-            unique_id,
+            h_handle, PAGE_READWRITE.0, high_size, low_size, unique_id,
         );
 
         match CreateFileMapping(
