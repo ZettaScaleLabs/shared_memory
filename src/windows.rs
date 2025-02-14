@@ -143,7 +143,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
         false => {
             let mut file_path = get_tmp_dir()?;
             file_path.push(unique_id.trim_start_matches('/'));
-            println!("Opening persistent_file at {}", file_path.to_string_lossy());
+            debug!("Opening persistent_file at {}", file_path.to_string_lossy());
 
             match OpenOptions::new()
                 .read(true)
@@ -271,6 +271,8 @@ fn create_file_mapping(
     };
     trace!("\t{:p}", map_ptr);
 
+    *map_ptr = 0;
+
     Ok(MapData {
         owner: true,
         file_map: map_h,
@@ -285,7 +287,7 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
     // Create file to back the shared memory
     let mut file_path = get_tmp_dir()?;
     file_path.push(unique_id.trim_start_matches('/'));
-    println!(
+    debug!(
         "Creating persistent_file at {}",
         file_path.to_string_lossy()
     );
