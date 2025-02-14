@@ -149,7 +149,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
                 .read(true)
                 .write(true)
                 .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
-                .attributes((FILE_ATTRIBUTE_TEMPORARY).0)
+                //.attributes((FILE_ATTRIBUTE_TEMPORARY).0)
                 .create(false)
                 .open(&file_path)
             {
@@ -294,7 +294,7 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
         .read(true)
         .write(true)
         .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
-        .attributes((FILE_ATTRIBUTE_TEMPORARY).0)
+        //.attributes((FILE_ATTRIBUTE_TEMPORARY).0)
         .create_new(true)
         .open(&file_path)
     {
