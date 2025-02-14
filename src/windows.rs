@@ -143,13 +143,13 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
         false => {
             let mut file_path = get_tmp_dir()?;
             file_path.push(unique_id.trim_start_matches('/'));
-            debug!("Opening persistent_file at {}", file_path.to_string_lossy());
+            println!("Opening persistent_file at {}", file_path.to_string_lossy());
 
             match OpenOptions::new()
                 .read(true)
                 .write(true)
                 .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
-                //.attributes((FILE_ATTRIBUTE_TEMPORARY).0)
+                .attributes((FILE_ATTRIBUTE_TEMPORARY).0)
                 .create(false)
                 .open(&file_path)
             {
@@ -285,7 +285,7 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
     // Create file to back the shared memory
     let mut file_path = get_tmp_dir()?;
     file_path.push(unique_id.trim_start_matches('/'));
-    debug!(
+    println!(
         "Creating persistent_file at {}",
         file_path.to_string_lossy()
     );
@@ -294,7 +294,7 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
         .read(true)
         .write(true)
         .share_mode((FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE).0)
-        //.attributes((FILE_ATTRIBUTE_TEMPORARY).0)
+        .attributes((FILE_ATTRIBUTE_TEMPORARY).0)
         .create_new(true)
         .open(&file_path)
     {
