@@ -65,7 +65,6 @@ impl Drop for MapData {
         // deleted once all handles have been closed and no new handles can be opened
         // because the file has been renamed. This matches the behavior of shm_unlink()
         // on unix.
-        /*
         if self.owner {
             let mut base_path = get_tmp_dir().unwrap();
 
@@ -107,7 +106,6 @@ impl Drop for MapData {
                 }
             };
         }
-        */
     }
 }
 
