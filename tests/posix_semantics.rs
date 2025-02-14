@@ -1,4 +1,4 @@
-use shared_memory::ShmemConf;
+use shared_memory::{ShmemConf, ShmemConfExt};
 use std::sync::mpsc::channel;
 use std::thread;
 
@@ -9,7 +9,17 @@ fn persistence() {
         shmem.set_owner(false);
         String::from(shmem.get_os_id())
     };
-    let mut shmem = ShmemConf::new().os_id(os_id).open().unwrap();
+
+    let mut shmem = ShmemConf::new()
+        .os_id(os_id)
+        .ext(ShmemConfExt {
+            #[cfg(target_os = "windows")]
+            allow_raw: true,
+            #[cfg(target_os = "windows")]
+            suppress_persistency: false,
+        })
+        .open()
+        .unwrap();
     shmem.set_owner(true);
 }
 

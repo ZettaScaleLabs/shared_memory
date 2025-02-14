@@ -57,7 +57,7 @@ fn open_os_id() {
     // Drop the owner of the mapping
     drop(s1);
 
-    // Make sure it can be openned again
+    // Make sure it can't be openned again
     assert!(ShmemConf::new().os_id(&os_id).open().is_err());
 
     drop(s2);
