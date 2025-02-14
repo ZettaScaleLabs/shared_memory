@@ -143,7 +143,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
         false => {
             let mut file_path = get_tmp_dir()?;
             file_path.push(unique_id.trim_start_matches('/'));
-            info!("Opening persistent_file at {}", file_path.to_string_lossy());
+            debug!("Opening persistent_file at {}", file_path.to_string_lossy());
 
             match OpenOptions::new()
                 .read(true)
@@ -167,11 +167,13 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
 
     let map_h = {
         //Open Mapping
-        info!("Opening memory mapping",);
+        debug!("Opening memory mapping",);
 
-        info!(
+        trace!(
             "OpenFileMappingW({:?}, {}, '{}')",
-            FILE_MAP_ALL_ACCESS, false, unique_id,
+            FILE_MAP_ALL_ACCESS,
+            false,
+            unique_id,
         );
         match OpenFileMapping(FILE_MAP_ALL_ACCESS, false, unique_id) {
             Ok(h) => h,
@@ -217,16 +219,20 @@ fn create_file_mapping(
     persistent_file: Option<File>,
 ) -> Result<MapData, ShmemError> {
     let map_h = {
-        info!("Creating memory mapping",);
+        debug!("Creating memory mapping",);
         let h_handle = persistent_file
             .as_ref()
             .map(|f| HANDLE(f.as_raw_handle() as _))
             .unwrap_or(INVALID_HANDLE_VALUE);
         let high_size: u32 = ((map_size as u64 & 0xFFFF_FFFF_0000_0000_u64) >> 32) as u32;
         let low_size: u32 = (map_size as u64 & 0xFFFF_FFFF_u64) as u32;
-        info!(
+        trace!(
             "CreateFileMapping({:?}, NULL, {:X}, {}, {}, '{}')",
-            h_handle, PAGE_READWRITE.0, high_size, low_size, unique_id,
+            h_handle,
+            PAGE_READWRITE.0,
+            high_size,
+            low_size,
+            unique_id,
         );
 
         match CreateFileMapping(
@@ -279,7 +285,7 @@ fn create_persistent_file_mapping(unique_id: &str, map_size: usize) -> Result<Ma
     // Create file to back the shared memory
     let mut file_path = get_tmp_dir()?;
     file_path.push(unique_id.trim_start_matches('/'));
-    info!(
+    debug!(
         "Creating persistent_file at {}",
         file_path.to_string_lossy()
     );
