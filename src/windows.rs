@@ -10,8 +10,8 @@ use crate::ShmemError;
 
 #[derive(Clone, Default)]
 pub struct ShmemConfExt {
-    allow_raw: bool,
-    suppress_persistency: bool,
+    pub allow_raw: bool,
+    pub suppress_persistency: bool,
 }
 
 impl ShmemConf {
