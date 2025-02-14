@@ -154,7 +154,7 @@ fn open_map(unique_id: &str, ext: &ShmemConfExt) -> Result<MapData, ShmemError> 
                 .open(&file_path)
             {
                 Ok(f) => Some(f),
-                Err(e) => {
+                Err(_e) => {
                     //if !ext.allow_raw {
                     //    return Err(ShmemError::MapOpenFailed(e.raw_os_error().unwrap() as _));
                     //}
