@@ -43,6 +43,7 @@ cfg_if! {
         compile_error!("shared_memory isnt implemented for this platform...");
     }
 }
+pub use os_impl::ShmemConfExt;
 
 #[derive(Clone, Default)]
 /// Struct used to configure different parameters before creating a shared memory mapping
@@ -97,6 +98,12 @@ impl ShmemConf {
     /// Sets the size of the mapping that will be used in `create()`
     pub fn size(mut self, size: usize) -> Self {
         self.size = size;
+        self
+    }
+
+    /// Sets the platform-specific parameters
+    pub fn ext(mut self, ext: os_impl::ShmemConfExt) -> Self {
+        self.ext = ext;
         self
     }
 
