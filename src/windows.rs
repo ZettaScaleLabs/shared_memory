@@ -271,8 +271,6 @@ fn create_file_mapping(
     };
     trace!("\t{:p}", map_ptr);
 
-    *map_ptr = 0;
-
     Ok(MapData {
         owner: true,
         file_map: map_h,
