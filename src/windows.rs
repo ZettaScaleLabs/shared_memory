@@ -185,11 +185,11 @@ fn attach_file_mapping<const CREATE: bool>(
                 Ok(v) => v,
                 Err(e) => {
                     let err_code = e.win32_error().unwrap();
-                    return Err(if err_code == ERROR_ALREADY_EXISTS {
-                        ShmemError::MappingIdExists
+                    return if err_code == ERROR_ALREADY_EXISTS {
+                        Err(ShmemError::MappingIdExists)
                     } else {
                         map_error::<CREATE>(err_code.0)
-                    });
+                    };
                 }
             }
         } else {
