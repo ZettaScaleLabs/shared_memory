@@ -139,11 +139,11 @@ fn get_tmp_dir() -> Result<PathBuf, ShmemError> {
 }
 
 fn map_error<const CREATE: bool>(error: u32) -> Result<MapData, ShmemError> {
-    if CREATE {
+    Err(if CREATE {
         ShmemError::MapCreateFailed(error)
     } else {
         ShmemError::MapOpenFailed(error)
-    }
+    })
 }
 
 fn attach_file_mapping<const CREATE: bool>(
@@ -268,7 +268,7 @@ fn attach_persistent_file_mapping<const CREATE: bool>(
             if !CREATE && allow_raw {
                 // This may be a mapping that isnt managed by this crate
                 // Try to open the mapping without any backing file
-                attach_file_mapping::<false>(unique_id, map_size, None)
+                return attach_file_mapping::<false>(unique_id, map_size, None);
             }
             map_error::<CREATE>(e.raw_os_error().unwrap() as _)
         }
@@ -283,7 +283,7 @@ pub fn attach<const CREATE: bool>(
 ) -> Result<MapData, ShmemError> {
     match ext.suppress_persistency {
         true => attach_file_mapping::<CREATE>(unique_id, map_size, None),
-        false => attach_persistent_file_mapping::<CREATE>(unique_id, map_size),
+        false => attach_persistent_file_mapping::<CREATE>(unique_id, map_size, ext.allow_raw),
     }
 }
 
@@ -293,7 +293,7 @@ pub fn create_mapping(
     map_size: usize,
     ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    attach::<true>(unique_id, map_size)
+    attach::<true>(unique_id, map_size, ext)
 }
 
 //Opens an existing mapping specified by its uid
@@ -302,5 +302,5 @@ pub fn open_mapping(
     map_size: usize,
     ext: &ShmemConfExt,
 ) -> Result<MapData, ShmemError> {
-    attach::<false>(unique_id, map_size)
+    attach::<false>(unique_id, map_size, ext)
 }
